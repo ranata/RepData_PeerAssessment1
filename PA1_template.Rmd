@@ -1,25 +1,83 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: 'Reproducible Research: Peer Assessment 1'
 ---
 
 
 ## Loading and preprocessing the data
 
-
-
+```{r}
+setwd("/Users/ranata/RepData_PeerAssessment1/")
+act <- read.csv("activity.csv", na.string="NA")
+```
 ## What is mean total number of steps taken per day?
+
+```{r}
+totDlAct <- aggregate(steps ~ date, act, sum, na.rm=TRUE)
+totDlAct <- transform(totDlAct, date = factor(date))
+
+barplot(names.arg = totDlAct$date,  
+         height = totDlAct$steps, col=c("green"), 
+         xlab="Date", ylab="No. of Steps",  
+         main="Total number of steps by date") 
+
+meanDlAct <- aggregate(steps ~ date, act, mean, na.rm=TRUE)
+medianDlAct <- aggregate(steps ~ date, act, median, na.rm=TRUE)
+```
 
 
 
 ## What is the average daily activity pattern?
 
+```{r}
 
+meanIntAct <- aggregate(steps ~ interval, act, mean, na.rm=TRUE)
+meanIntAct <- transform(meanIntAct, interval = factor(interval))
+
+plot(meanIntAct$interval, meanIntAct$steps, type="l")
+subset(meanIntAct, steps == max(steps))$interval
+```
 
 ## Imputing missing values
+
+```{r}
+# Calculate number of missing values
+summary(act$steps)
+
+# impute missing values with mean for the corresponding 5 min interval
+library(Hmisc)
+actImp <- act
+actImp$steps <- with(actImp, impute(steps, mean))
+
+totDlActImp <- aggregate(steps ~ date, actImp, sum, na.rm=TRUE)
+totDlActImp <- transform(totDlActImp, date = factor(date))
+
+barplot(names.arg = totDlActImp$date,  
+         height = totDlActImp$steps, col=c("red"), 
+         xlab="Date", ylab="No. of Steps",  
+         main="Total number of steps by date with imputed value") 
+
+meanDlActImp <- aggregate(steps ~ date, actImp, mean)
+medianDlActImp <- aggregate(steps ~ date, actImp, median)
+```
 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r}
+actImp$date <- as.Date(actImp$date,"%Y-%m-%d")
+days <- weekdays(actImp$date)
+actImp$dayType <- ifelse(days == "Saturday" | days == "Sunday", 
+                                "Weekend", "Weekday")
+meanSteps <- aggregate(actImp$steps,
+                                    by=list(actImp$interval,
+                                            actImp$dayType), mean)
+names(meanSteps) <- c("interval","dayType","steps")
+xyplot(steps~interval | dayType, meanSteps,type="l",
+       layout=c(1,2),xlab="Interval",ylab = "Number of steps")
+
+tapply(meanSteps$steps, meanSteps$dayType,
+       function (x) { c(MINIMUM=min(x),MEAN=mean(x),
+                        MEDIAN=median(x),MAXIMUM=max(x))})
+
+```
