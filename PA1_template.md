@@ -69,34 +69,6 @@ summary(act$steps)
 ```r
 # impute missing values with mean for the corresponding 5 min interval
 library(Hmisc)
-```
-
-```
-## Warning: package 'Hmisc' was built under R version 3.1.2
-```
-
-```
-## Loading required package: grid
-## Loading required package: lattice
-## Loading required package: survival
-## Loading required package: splines
-## Loading required package: Formula
-```
-
-```
-## Warning: package 'Formula' was built under R version 3.1.2
-```
-
-```
-## 
-## Attaching package: 'Hmisc'
-## 
-## The following objects are masked from 'package:base':
-## 
-##     format.pval, round.POSIXt, trunc.POSIXt, units
-```
-
-```r
 actImp <- act
 actImp$steps <- with(actImp, impute(steps, mean))
 

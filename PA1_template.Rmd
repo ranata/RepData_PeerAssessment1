@@ -5,13 +5,13 @@ title: 'Reproducible Research: Peer Assessment 1'
 
 ## Loading and preprocessing the data
 
-```{r}
+```{r echo=TRUE}
 setwd("/Users/ranata/RepData_PeerAssessment1/")
 act <- read.csv("activity.csv", na.string="NA")
 ```
 ## What is mean total number of steps taken per day?
 
-```{r}
+```{r echo=TRUE}
 totDlAct <- aggregate(steps ~ date, act, sum, na.rm=TRUE)
 totDlAct <- transform(totDlAct, date = factor(date))
 
@@ -28,7 +28,7 @@ medianDlAct <- aggregate(steps ~ date, act, median, na.rm=TRUE)
 
 ## What is the average daily activity pattern?
 
-```{r}
+```{r echo=TRUE}
 
 meanIntAct <- aggregate(steps ~ interval, act, mean, na.rm=TRUE)
 meanIntAct <- transform(meanIntAct, interval = factor(interval))
@@ -39,7 +39,7 @@ subset(meanIntAct, steps == max(steps))$interval
 
 ## Imputing missing values
 
-```{r}
+```{r echo=TRUE}
 # Calculate number of missing values
 summary(act$steps)
 
@@ -64,7 +64,7 @@ medianDlActImp <- aggregate(steps ~ date, actImp, median)
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r}
+```{r echo=TRUE}
 actImp$date <- as.Date(actImp$date,"%Y-%m-%d")
 days <- weekdays(actImp$date)
 actImp$dayType <- ifelse(days == "Saturday" | days == "Sunday", 
